@@ -20,7 +20,8 @@ PYBIND11_MODULE(tetris_environment, handle)
           return out;
         })
         .def("isActive", &Environment::isActive)
-				.def("render", &Environment::render);
+		.def("render", &Environment::render)
+        .def("reset", &Environment::reset);
 
     py::enum_<ActionSpace::Action>(handle, "ActionSpace")
         .value("none", ActionSpace::Action::None) // Action 0

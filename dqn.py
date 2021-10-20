@@ -43,10 +43,7 @@ def agent(state_shape, action_shape):
 		metrics=['accuracy'])
 	return model
 
-def get_qs(model, state, step):
-	return model.predict(state.reshape([1, state.shape[0]]))[0] # This will be changed
-
-def train(env, replay_memory, model, target_model, done):
+def train(replay_memory, model, done):
 	learning_rate = .7
 	discount_factor = .618
 
@@ -133,10 +130,22 @@ def main():
 
 			# 3) Update the main network using the Bellman Equation 
 			if steps_to_update_target_model % 4 == 0 or done:
-				train(environment, replay_memory, main, target, done)
+				train(replay_memory, main, done)
 
 			observation = new_observation
 			total_training_rewards += reward
+
+			if done:
+				print(f"Total training rewards: {total_training_rewards} after n = {episode} steps, with final reward {reward}")
+				total_training_rewards += 1
+
+				if steps_to_update_target_model >= 100:
+					print("Copying main network weights to the target network weights")
+					target.set_weights(main.get_weights())
+					steps_to_update_target_model = 0
+
+				# Reset the environment
+				environment.reset()
 
 		epsilon = min_epsilon + (max_epsilon - min_epsilon) * np.exp(-decay * episode)
 	main.save("main")

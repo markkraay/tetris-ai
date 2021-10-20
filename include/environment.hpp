@@ -12,6 +12,9 @@
 class Environment {
 	private:
 		bool active;
+		int row;
+		int col;
+		int block_size;
 
 		sf::RenderWindow *window;
 
@@ -31,6 +34,7 @@ class Environment {
 		Environment(int r=20, int c=10, int bs=30); // Rows, columns, block size
 
 		void render();
+		void reset();
 		void run();
 		bool moveDown();
 

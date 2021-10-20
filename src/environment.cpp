@@ -7,6 +7,10 @@
 
 Environment::Environment(int r, int c, int bs)
 {
+    this->row = r;
+    this->col = c;
+    this->block_size = bs;
+
     this->board = Board(r, c, bs);
     this->piece = Piece(PieceTypes::random(), bs);
 
@@ -130,6 +134,15 @@ void Environment::run()
         }
         render();
     }
+}
+
+void Environment::reset() {
+    this->board = Board(this->row, this->col, this->block_size);
+    this->piece = Piece(PieceTypes::random(), this->block_size);
+    score.setString("Score: " + std::to_string(board.getScore()));
+    level.setString("Level: " + std::to_string(board.getLevel()));
+    rows_removed.setString("Rows Cleared: " + std::to_string(board.getRowsCleared()));
+    this->active = true;
 }
 
 std::vector<std::vector<int>> Environment::getObservationSpace()
