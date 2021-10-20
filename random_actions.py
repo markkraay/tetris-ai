@@ -1,12 +1,13 @@
 # Random choice algorithm
 
-from ..build.tetris_environment import Environment, ActionSpace
+from build.tetris_environment import Environment, ActionSpace
 import random
 
 if __name__ == "__main__":
 	environment = Environment()
 
 	while environment.isActive():
+		print(environment.getObservationSpace())
 		choice = random.randint(0, 3)
 		if choice == 1:
 			environment.executeAction(ActionSpace.left)

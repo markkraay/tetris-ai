@@ -4,6 +4,9 @@
 #include "action_space.hpp"
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/numpy.h>
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(tetris_environment, handle)
@@ -12,7 +15,10 @@ PYBIND11_MODULE(tetris_environment, handle)
     py::class_<Environment>(handle, "Environment")
 				.def(py::init<>())
         .def("executeAction", &Environment::executeAction)
-        // .def("getObservationSpace", &Environment::getObservationSpace)
+        .def("getObservationSpace", [](Environment &self) {
+          py::array out = py::cast(self.getObservationSpace());
+          return out;
+        })
         .def("isActive", &Environment::isActive)
 				.def("render", &Environment::render);
     py::enum_<ActionSpace::Action>(handle, "ActionSpace")

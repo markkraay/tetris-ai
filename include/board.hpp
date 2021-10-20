@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dimension.hpp"
+#include <coord.hpp>
 #include <SFML/Graphics.hpp>
 #include <cstdint>
 #include <map>
@@ -31,6 +33,8 @@ public:
     bool validPiece(Piece *piece);
 
     std::vector<sf::RectangleShape> getBlocks();
+    std::vector<Coord> getCoords();
+    Dimension getDims();
     int getScore();
     int getLevel();
     int getRowsCleared();

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "coord.hpp"
 #include "board.hpp"
 #include "piece.hpp"
 #include "action_space.hpp"
@@ -33,7 +34,7 @@ class Environment {
 		void run();
 		bool moveDown();
 
-		// void getObservationSpace();
+		std::vector<std::vector<int>> getObservationSpace();
 		void executeAction(ActionSpace::Action action);
 		bool isActive();
 };

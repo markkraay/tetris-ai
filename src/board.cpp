@@ -1,5 +1,6 @@
 #include "board.hpp"
 #include "piece.hpp"
+#include "dimension.hpp"
 
 #include <cstdint>
 #include <iostream>
@@ -150,4 +151,18 @@ int Board::getLevel()
 int Board::getRowsCleared()
 {
     return this->rowsCleared;
+}
+
+std::vector<Coord> Board::getCoords() {
+    std::vector<Coord> coords;
+    for (auto row : this->blocks) {
+        for (auto col : row.second) {
+            coords.push_back(Coord{row.first, col.first});
+        }
+    }
+    return coords;
+}
+
+Dimension Board::getDims() {
+    return Dimension{this->rows, this->cols};
 }

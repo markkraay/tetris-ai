@@ -3,6 +3,7 @@
 #include "piece.hpp"
 #include "piece_types.hpp"
 #include "action_space.hpp"
+#include "dimension.hpp"
 
 Environment::Environment(int r, int c, int bs)
 {
@@ -131,10 +132,15 @@ void Environment::run()
     }
 }
 
-// TODO: Implement a way to read in the board
-// void Environment::getObservationSpace()
-// {
-// }
+std::vector<std::vector<int>> Environment::getObservationSpace()
+{
+    auto dims = this->board.getDims();
+    std::vector<std::vector<int>> binary_board(dims.row, std::vector(dims.col, 0));
+    for (const auto &coord : this->board.getCoords()) {
+        binary_board[coord.x][coord.y] = 1;
+    }
+    return binary_board;
+}
 
 void Environment::executeAction(ActionSpace::Action action)
 {
