@@ -1,3 +1,0 @@
-/home/mark/yt/tetris-rl/build/CMakeFiles/rebuild_cache.dir
-/home/mark/yt/tetris-rl/build/CMakeFiles/edit_cache.dir
-/home/mark/yt/tetris-rl/build/CMakeFiles/tetris.dir
