@@ -1,8 +1,8 @@
 # Tetris AI Environment
 ## Prerequisites
-*CMake
-*Pybind11 (preferably installed in a conda environment)
-*SFML > 2.0
+* CMake
+* Pybind11 (preferably installed in a conda environment)
+* SFML > 2.0
 
 ## Building Python libraries
 ```
