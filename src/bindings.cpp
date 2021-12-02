@@ -21,12 +21,22 @@ PYBIND11_MODULE(tetris_environment, handle)
         })
         .def("isActive", &Environment::isActive)
 				.def("render", &Environment::render);
+
     py::enum_<ActionSpace::Action>(handle, "ActionSpace")
-        .value("left", ActionSpace::Action::Left)
-        .value("right", ActionSpace::Action::Right)
-        .value("rotate", ActionSpace::Action::Rotate)
-        .value("none", ActionSpace::Action::None)
-        .def("sample", &ActionSpace::random);
+        .value("none", ActionSpace::Action::None) // Action 0
+        .value("left", ActionSpace::Action::Left) // Action 1
+        .value("right", ActionSpace::Action::Right) // Action 2
+        .value("rotate", ActionSpace::Action::Rotate) // Action 3
+        .def("sample", &ActionSpace::random)
+        .def("getActionSpace", []() {
+          std::vector<std::vector<int>> actions;
+          for (int i = 0; i < 4; i++) {
+            actions.push_back(std::vector<int>{i});
+          }
+          py::array out = py::cast(actions);
+          return out;
+        });
+
 }
 
 #endif

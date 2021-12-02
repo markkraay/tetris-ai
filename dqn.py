@@ -1,8 +1,32 @@
+from os import environ
 from build.tetris_environment import Environment, ActionSpace
 import numpy as np
 import tensorflow as tf
 import random
 from collections import deque
+
+def calculate_reward(original_observation, new_observation):
+	# For this implementation, there will be a positive reward if the number of blocks
+	# are removed from one episode to the next (20). There will be a negative reward if the 
+	# agent takes an action and it doesn't remove the number of blocks (-1)
+	original_num_blocks = original_observation.tolist().count(1)
+	new_num_blocks = new_observation.tolist().count(1)
+	if new_num_blocks < original_num_blocks:
+		return 20
+	return -1
+
+def step(environment, observation, action):
+	"""
+	@params1: environment: The Tetris environment
+	@params2: observation: The current observation
+	@returns (new_observatio, reward, done)
+	"""
+	print(action)
+	environment.executeAction(action)
+	new_observ = environment.getObservationSpace()
+	reward = calculate_reward(observation, new_observ)
+	done = not environment.isActive()
+	return (new_observ, reward, done)
 
 def agent(state_shape, action_shape):
 	"""
@@ -65,11 +89,13 @@ def main():
 	decay = .01
 
 	environment = Environment()
+	print(environment.getObservationSpace().shape)
+	print(ActionSpace.getActionSpace().shape)
 	# 1) Initialize the target and the main models
 	# Main model updates every 4 steps
-	main = agent(environment.getObservationSpace().shape, ActionSpace.shape)
+	main = agent(environment.getObservationSpace().shape, ActionSpace.getActionSpace().shape[0])
 	# Target  models updates every 100 steps
-	target = agent(environment.getObservationSpace().shape, ActionSpace.shape)
+	target = agent(environment.getObservationSpace().shape, ActionSpace.getActionSpace().shape[0])
 	target.set_weights(main.get_weights())
 
 	replay_memory = deque(maxlen=50_000)
@@ -92,19 +118,29 @@ def main():
 			if np.random.rand() <= epsilon: # Explore
 				action = ActionSpace.sample()
 			else: # Exploit the best known action
-				action = np.argmax(main.predict(observation))
+				action_id = np.argmax(main.predict(observation))
+				if action_id == 0:
+					action = ActionSpace.none
+				elif action_id == 1:
+					action = ActionSpace.left
+				elif action_id == 2:
+					action = ActionSpace.right
+				elif action_id == 3:
+					action = ActionSpace.rotate
 
-			new_obsevation, reward, done, info = env.step(action)
+			(new_observation, reward, done) = step(environment, observation, action)
 			replay_memory.append([observation, action, reward, new_observation, done])
 
 			# 3) Update the main network using the Bellman Equation 
 			if steps_to_update_target_model % 4 == 0 or done:
 				train(environment, replay_memory, main, target, done)
 
-			observation = new_obsevation
+			observation = new_observation
 			total_training_rewards += reward
 
 		epsilon = min_epsilon + (max_epsilon - min_epsilon) * np.exp(-decay * episode)
 	main.save("main")
 	target.save("target")
 
+if __name__ == "__main__":
+	main()
