@@ -5,6 +5,8 @@
 #include "action_space.hpp"
 #include "dimension.hpp"
 
+#include <iostream>
+
 Environment::Environment(int r, int c, int bs)
 {
     this->board = Board(r, c, bs);
@@ -47,6 +49,10 @@ Environment::Environment(int r, int c, int bs)
 
 void Environment::render()
 {
+    std::cout << "render" << std::endl;
+    sf::Event event;
+    this->window->pollEvent(event);
+
     this->window->clear();
     for (const auto b : piece.getBlocks())
     {
@@ -144,6 +150,7 @@ std::vector<std::vector<int>> Environment::getObservationSpace()
 
 void Environment::executeAction(ActionSpace::Action action)
 {
+    std::cout << "executeAction" << std::endl;
     if (active == false)
         return;
 
@@ -166,5 +173,6 @@ void Environment::executeAction(ActionSpace::Action action)
 
 bool Environment::isActive()
 {
+    std::cout << "isActive" << std::endl;
     return this->active;
 }
