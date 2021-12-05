@@ -5,15 +5,31 @@ import tensorflow as tf
 import random
 from collections import deque
 
-def calculate_reward(original_observation, new_observation):
-	# For this implementation, there will be a positive reward if the number of blocks
-	# are removed from one episode to the next (20). There will be a negative reward if the 
-	# agent takes an action and it doesn't remove the number of blocks (-1)
-	original_num_blocks = original_observation.tolist().count(1)
-	new_num_blocks = new_observation.tolist().count(1)
-	if new_num_blocks < original_num_blocks:
-		return 20
-	return -1
+def calculate_fitness(old_observation, new_observation):
+	# Heuristic from: https://codemyroad.wordpress.com/2013/04/14/tetris-ai-the-near-perfect-player/
+	# Fitness is the -.51 * Height + .76 * Lines - .36 * Holes - .18 * Bumpiness
+	# 1) We calculate the aggregate height, which is pretty much just how many blocks
+	# are present
+	aggregate_height = new_observation.tolist().count(1)
+	# 2) We calculate the number of complete lines. We can find this by finding the change
+	# in the number of blocks between observations and dividing by the number of blocks that
+	# are present in a row
+	complete_lines = (old_observation.tolist().count(1) - new_observation.tolist().count(1)) / old_observation.shape[0]
+	# 3) We calculate the number of holes, or the number of emtpy spaces with blocks above them.
+	holes = 0
+	for col in range(new_observation.shape[1]):
+		for row in range(new_observation.shape[0]):
+			if row != 0 and new_observation[row][col] == 0 and new_observation[row-1][col] == 1:
+				holes += 1
+	# 4) We calculate the bumpiness, which is the absolute value of the difference in consecutive heights
+	bumpiness = 0
+	for col in range(1, new_observation.shape[1]):
+		c1 = new_observation[:, col-1].tolist().count(1)
+		c2 = new_observation[:, col].tolist().count(1)
+		bumpiness += abs(c1 - c2)
+	
+	# Return the weighted sum of these values as the fitness
+	return -.51 * aggregate_height + .76 * complete_lines -.36 * holes -.18 * bumpiness
 
 def step(environment, observation, action):
 	"""
@@ -23,10 +39,10 @@ def step(environment, observation, action):
 	"""
 	print(action)
 	environment.executeAction(action)
-	new_observ = environment.getObservationSpace()
-	reward = calculate_reward(observation, new_observ)
+	new_observation = environment.getObservationSpace()
+	reward = calculate_fitness(observation, new_observation)
 	done = not environment.isActive()
-	return (new_observ, reward, done)
+	return (new_observation, reward, done)
 
 def agent(state_shape, action_shape):
 	"""
