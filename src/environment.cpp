@@ -1,9 +1,12 @@
+#include <tuple>
 #include "environment.hpp"
 #include "board.hpp"
 #include "piece.hpp"
 #include "piece_types.hpp"
 #include "action_space.hpp"
 #include "dimension.hpp"
+
+typedef std::vector<std::vector<int>> Img;
 
 Environment::Environment(int r, int c, int bs)
 {
@@ -155,9 +158,9 @@ std::vector<std::vector<int>> Environment::getObservationSpace()
     return binary_board;
 }
 
-std::vector<std::vector<std::vector<int>>> Environment::getPieceConfigurations() 
+std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> Environment::getPieceConfigurations() 
 {
-    std::vector<std::vector<std::vector<int>>> configurations;
+    std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> configurations;
     auto dims = this->board.getDims();
     Piece original_piece = this->piece;
 
@@ -172,19 +175,25 @@ std::vector<std::vector<std::vector<int>>> Environment::getPieceConfigurations()
     for (int i = 0; i < 4; i++) { // Assuming 4 rotations for each block (not the case for the square block)
         this->piece.rotate(this->board);
         Piece rotation_piece = this->piece;
-        for (int i = min; i < max; i++) {
+        for (int j = min; j < max; j++) {
             rotation_piece.moveRight(this->board);
             Piece drop_piece = rotation_piece;
-            while (drop_piece.moveDown(this->board)) {}
+            int moves_down = 0;
+            while (drop_piece.moveDown(this->board)) {
+                moves_down++;
+            }
             // Add the board configuration to the total configurations
-            std::vector<std::vector<int>> binary_board(dims.row, std::vector(dims.col, 0));
+            std::vector<std::vector<int>> img(dims.row, std::vector(dims.col, 0));
             for (const auto &coord : this->board.getCoords()) {
-                binary_board[coord.x][coord.y] = 1;
+                img[coord.x][coord.y] = 1;
             }
             for (const auto &coord : drop_piece.getCoords()) {
-                binary_board[coord.x][coord.y] = 1;
+                img[coord.x][coord.y] = 1;
             }
-            configurations.push_back(binary_board);
+            std::vector<ActionSpace::Action> actions(i, ActionSpace::Action::Rotate);
+            for (int a = 0; a < j; a++) actions.push_back(ActionSpace::Action::Right);
+            for (int a = 0; a < moves_down; a++) actions.push_back(ActionSpace::Action::None);
+            configurations.push_back(std::tuple<Img, std::vector<ActionSpace::Action>>{img, actions});
         }
     }
     this->piece = original_piece;

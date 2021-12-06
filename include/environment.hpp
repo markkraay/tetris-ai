@@ -5,6 +5,8 @@
 #include "piece.hpp"
 #include "action_space.hpp"
 
+typedef std::vector<std::vector<int>> Img;
+
 /**
  * @brief Provides wrapper functionality for the Board class, implementing
  * game graphics and providing mechanisms for controlling the Board.
@@ -39,7 +41,7 @@ class Environment {
 		bool moveDown();
 
 		std::vector<std::vector<int>> getObservationSpace();
-		std::vector<std::vector<std::vector<int>>> getPieceConfigurations();
+		std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> getPieceConfigurations();
 		void executeAction(ActionSpace::Action action);
 		bool isActive();
 };
