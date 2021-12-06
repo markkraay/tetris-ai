@@ -27,7 +27,7 @@ def calculate_fitness(old_observation, new_observation):
 		c1 = new_observation[:, col-1].tolist().count(1)
 		c2 = new_observation[:, col].tolist().count(1)
 		bumpiness += abs(c1 - c2)
-	
+
 	# Return the weighted sum of these values as the fitness
 	return -.51 * aggregate_height + .76 * complete_lines -.36 * holes -.18 * bumpiness
 

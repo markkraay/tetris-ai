@@ -19,8 +19,12 @@ PYBIND11_MODULE(tetris_environment, handle)
           py::array out = py::cast(self.getObservationSpace());
           return out;
         })
+        .def("getPieceConfigurations", [](Environment &self) {
+          py::array out = py::cast(self.getPieceConfigurations());
+          return out;
+        })
         .def("isActive", &Environment::isActive)
-		.def("render", &Environment::render)
+		    .def("render", &Environment::render)
         .def("reset", &Environment::reset);
 
     py::enum_<ActionSpace::Action>(handle, "ActionSpace")

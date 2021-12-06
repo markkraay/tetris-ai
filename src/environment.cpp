@@ -155,6 +155,42 @@ std::vector<std::vector<int>> Environment::getObservationSpace()
     return binary_board;
 }
 
+std::vector<std::vector<std::vector<int>>> Environment::getPieceConfigurations() 
+{
+    std::vector<std::vector<std::vector<int>>> configurations;
+    auto dims = this->board.getDims();
+    Piece original_piece = this->piece;
+
+    // Find the width of the current piece for the number of right movements
+    int min, max;
+    for (const Coord &c : original_piece.getCoords()) {
+        if (c.x < min) min = c.x;
+        if (c.x > max) max = c.x;
+    }
+
+    // Have to test each rotation and each row
+    for (int i = 0; i < 4; i++) { // Assuming 4 rotations for each block (not the case for the square block)
+        this->piece.rotate(this->board);
+        Piece rotation_piece = this->piece;
+        for (int i = min; i < max; i++) {
+            rotation_piece.moveRight(this->board);
+            Piece drop_piece = rotation_piece;
+            while (drop_piece.moveDown(this->board)) {}
+            // Add the board configuration to the total configurations
+            std::vector<std::vector<int>> binary_board(dims.row, std::vector(dims.col, 0));
+            for (const auto &coord : this->board.getCoords()) {
+                binary_board[coord.x][coord.y] = 1;
+            }
+            for (const auto &coord : drop_piece.getCoords()) {
+                binary_board[coord.x][coord.y] = 1;
+            }
+            configurations.push_back(binary_board);
+        }
+    }
+    this->piece = original_piece;
+    return configurations;
+}
+
 void Environment::executeAction(ActionSpace::Action action)
 {
     if (active == false)
