@@ -10,6 +10,17 @@
 
 Piece::Piece() {}
 
+Piece::Piece(Piece &p) {
+    p.blocks = this->blocks;
+    p.block_size = this->block_size;
+    p.color = this->color;
+    p.coords = this->coords;
+    p.moved = this->moved;
+    p.transformation_index = this->transformation_index;
+    p.transformations = this->transformations;
+    p.type = this->type;
+}
+
 Piece::Piece(PieceTypes::Type t, int size)
 {
     this->type = t;

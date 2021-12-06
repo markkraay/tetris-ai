@@ -173,9 +173,9 @@ std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> Environment::getP
 
     // Have to test each rotation and each row
     for (int i = 0; i < 4; i++) { // Assuming 4 rotations for each block (not the case for the square block)
-        this->piece.rotate(this->board);
-        Piece rotation_piece = this->piece;
-        for (int j = min; j < max; j++) {
+        original_piece.rotate(this->board);
+        Piece rotation_piece = original_piece;
+        for (int j = max - min; j < dims.col; j++) {
             rotation_piece.moveRight(this->board);
             Piece drop_piece = rotation_piece;
             int moves_down = 0;

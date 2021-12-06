@@ -29,6 +29,7 @@ private:
 
 public:
     Piece(PieceTypes::Type t, int size);
+    Piece(Piece &p);
     Piece();
 
     std::vector<Coord> getCoords();

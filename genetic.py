@@ -46,9 +46,14 @@ class FitnessFunction():
 	def find_best_actions(self, observations):
 		# Using the weights, we have to test which piece configuration
 		# results in the highest score.
+		best_score = 0
+		best_path = None
 		for observation in observations:
-			pass
-
+			fitness = get_fitness(observation[0])
+			if fitness > best_score:
+				best_score = fitness
+				best_path = observation[1]
+		return best_path
 
 def main():
 	environment = Environment()
@@ -56,11 +61,12 @@ def main():
 	fitness_func = FitnessFunction(-.51, .76, -.35, -.184)
 
 	while environment.isActive():
-		print(environment.getPieceConfigurations())
-#		action = fitness_func.find_best_action(environment.getPieceConfigurations())
-#		print(action)
-#		environment.executeAction(action)
-#		environment.render()
+		configs = environment.getPieceConfigurations()
+		print(1)
+		actions = fitness_func.find_best_actions(configs)
+		for action in actions:
+			environment.executeAction(action)
+			environment.render()
 
 if __name__ == "__main__":
 	main()
