@@ -32,6 +32,9 @@ class Environment {
 
 		Board board;
 		Piece piece; 
+
+		void move_down_helper(std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> &configs, Piece piece, int moves, ActionSpace::Action action, int rotations);
+
 	public:
 		Environment(int r=20, int c=10, int bs=30); // Rows, columns, block size
 

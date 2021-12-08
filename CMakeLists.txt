@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 set(CMAKE_CXX_STANDARD 20)
 project(tetris VERSION 1.0)
+set(CMAKE_BUILD_TYPE Debug)
 
 option(BUILD_PYTHON "Build Python modules. (OFF builds executable)" OFF)
 

@@ -16,11 +16,9 @@ class FitnessFunction():
 
 	def get_params(self, observation):
 		# Generate a new fitness measurement
-
 		complete_lines = 0
 		if self.old_observation is not None:
 			complete_lines = max(((self.old_observation.sum() - observation.sum()) / self.old_observation.shape[1]), 0)
-		print(complete_lines)
 
 		# Find the number of holes
 		holes = 0
@@ -83,9 +81,7 @@ class FitnessFunction():
 				f_lines = lines
 				f_height = height
 				f_bumps = bumps
-		print(f"Complete lines: {f_lines} Bumpiness: {f_bumps} Holes: {f_holes} Height: {f_height}")
 		self.old_observation = np.array(best_observation[0])
-		print(self.old_observation)
 		return best_observation[1] # Action sequence
 
 def main():
@@ -96,10 +92,14 @@ def main():
 
 	while environment.isActive():
 		configs = environment.getPieceConfigurations()
-		actions = fitness_func.find_best_actions(configs)
-		for action in actions:
-			environment.executeAction(action)
+		if len(configs) == 0:
+			environment.executeAction(ActionSpace.none)
 			environment.render()
+		else:
+			actions = fitness_func.find_best_actions(configs)
+			for action in actions:
+				environment.executeAction(action)
+				environment.render()
 	
 
 if __name__ == "__main__":
