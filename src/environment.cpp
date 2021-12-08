@@ -6,8 +6,6 @@
 #include "action_space.hpp"
 #include "dimension.hpp"
 
-typedef std::vector<std::vector<int>> Img;
-
 Environment::Environment(int r, int c, int bs)
 {
     this->row = r;
@@ -92,6 +90,7 @@ bool Environment::moveDown()
             rows_removed.setString("Rows Cleared: " + std::to_string(board.getRowsCleared()));
 
             piece = Piece(PieceTypes::random(), piece.getBlockSize());
+            this->getPieceConfigurations();
         }
     }
     // The game can continue
@@ -148,24 +147,25 @@ void Environment::reset() {
     this->active = true;
 }
 
-std::vector<std::vector<int>> Environment::getObservationSpace()
+Img Environment::getObservationSpace()
 {
     auto dims = this->board.getDims();
-    std::vector<std::vector<int>> binary_board(dims.row, std::vector(dims.col, 0));
+    Img binary_board(dims.row, std::vector<int>(dims.col, 0));
     for (const auto &coord : this->board.getCoords()) {
         binary_board[coord.x][coord.y] = 1;
     }
     return binary_board;
 }
 
-std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> Environment::getPieceConfigurations() 
+std::vector<Img> Environment::getPieceConfigurations() 
 {
-    std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> configurations;
+    std::vector<Img> configurations;
     auto dims = this->board.getDims();
     Piece original_piece = this->piece;
 
     // Find the width of the current piece for the number of right movements
-    int min, max;
+    int min = dims.col;
+    int max = 0;
     for (const Coord &c : original_piece.getCoords()) {
         if (c.x < min) min = c.x;
         if (c.x > max) max = c.x;
@@ -183,20 +183,16 @@ std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> Environment::getP
                 moves_down++;
             }
             // Add the board configuration to the total configurations
-            std::vector<std::vector<int>> img(dims.row, std::vector(dims.col, 0));
+            Img img(dims.row, std::vector<int>(dims.col, 0));
             for (const auto &coord : this->board.getCoords()) {
                 img[coord.x][coord.y] = 1;
             }
             for (const auto &coord : drop_piece.getCoords()) {
                 img[coord.x][coord.y] = 1;
             }
-            std::vector<ActionSpace::Action> actions(i, ActionSpace::Action::Rotate);
-            for (int a = 0; a < j; a++) actions.push_back(ActionSpace::Action::Right);
-            for (int a = 0; a < moves_down; a++) actions.push_back(ActionSpace::Action::None);
-            configurations.push_back(std::tuple<Img, std::vector<ActionSpace::Action>>{img, actions});
+            configurations.push_back(img);
         }
     }
-    this->piece = original_piece;
     return configurations;
 }
 

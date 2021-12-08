@@ -20,11 +20,8 @@ PYBIND11_MODULE(tetris_environment, handle)
           return out;
         })
         .def("getPieceConfigurations", [](Environment &self) {
-          auto configs = self.getPieceConfigurations();
-          py::array imgs = py::cast(configs[0]);
-          py::array steps = py::cast(configs[1]);
-          py::tuple tup = py::make_tuple(imgs, steps);
-          return tup;
+          py::array out = py::cast(self.getPieceConfigurations());
+          return out;
         })
         .def("isActive", &Environment::isActive)
 		    .def("render", &Environment::render)
