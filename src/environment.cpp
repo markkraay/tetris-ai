@@ -164,20 +164,23 @@ std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> Environment::getP
     Piece original_piece = this->piece;
 
     // Find the width of the current piece for the number of right movements
-    int min = dims.col;
-    int max = 0;
-    for (const Coord &c : original_piece.getCoords()) {
-        if (c.x < min) min = c.x;
-        if (c.x > max) max = c.x;
-    }
+    
 
     // Have to test each rotation and each row
-    for (int rotations = 0; rotations < 4; rotations++) { // Assuming 4 rotations for each block (not the case for the square block)
+    for (int rotations = 1; rotations <= 4; rotations++) { // Assuming 4 rotations for each block (not the case for the square block)
         original_piece.rotate(this->board);
-        Piece rotation_piece = original_piece;
-        for (int m_right = max - min; m_right < dims.col; m_right++) {
-            rotation_piece.moveRight(this->board);
-            Piece drop_piece = rotation_piece;
+        Piece left_piece = original_piece;
+        Piece right_piece = original_piece;
+        int min = dims.col;
+        int max = 0;
+        for (const Coord &c : original_piece.getCoords()) {
+            if (c.x < min) min = c.x;
+            if (c.x > max) max = c.x;
+        }
+        for (int m_left = 0; m_left < min; m_left++) {
+            if (m_left != 0)
+            left_piece.moveLeft(this->board);
+            Piece drop_piece = left_piece;
             int m_down = 1;
             while (drop_piece.moveDown(this->board)) {
                 m_down++;
@@ -189,10 +192,30 @@ std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> Environment::getP
             }
             for (const auto &coord : drop_piece.getCoords()) {
                 img[coord.y][coord.x] = 1;
-             }
-             std::vector<ActionSpace::Action> actions(rotations, ActionSpace::Action::Rotate);
-             for (int i = 0; i < m_right; i++) actions.push_back(ActionSpace::Action::Right);
-             for (int i = 0; i < m_down; i++) actions.push_back(ActionSpace::Action::None);
+            }
+            std::vector<ActionSpace::Action> actions(rotations, ActionSpace::Action::Rotate);
+            for (int i = 0; i < min; i++) actions.push_back(ActionSpace::Action::Left);
+            for (int i = 0; i < m_down; i++) actions.push_back(ActionSpace::Action::None);
+            configurations.push_back(std::make_tuple(img, actions));
+        }
+        for (int m_right = max - min; m_right < dims.col; m_right++) {
+            right_piece.moveRight(this->board);
+            Piece drop_piece = right_piece;
+            int m_down = 1;
+            while (drop_piece.moveDown(this->board)) {
+                m_down++;
+            }
+            // // Add the board configuration to the total configurations
+            Img img(dims.row, std::vector<int>(dims.col, 0));
+            for (const auto &coord : this->board.getCoords()) {
+                img[coord.y][coord.x] = 1;
+            }
+            for (const auto &coord : drop_piece.getCoords()) {
+                img[coord.y][coord.x] = 1;
+            }
+            std::vector<ActionSpace::Action> actions(rotations, ActionSpace::Action::Rotate);
+            for (int i = 0; i < m_right; i++) actions.push_back(ActionSpace::Action::Right);
+            for (int i = 0; i < m_down; i++) actions.push_back(ActionSpace::Action::None);
             configurations.push_back(std::make_tuple(img, actions));
         }
     }

@@ -40,7 +40,7 @@ public:
     bool hasBeenMoved();
 
     bool moveDown(Board &board);
-    void moveLeft(Board &board);
-    void moveRight(Board &board);
-    void rotate(Board &board);
+    bool moveLeft(Board &board);
+    bool moveRight(Board &board);
+    bool rotate(Board &board);
 };

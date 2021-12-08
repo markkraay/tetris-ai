@@ -143,7 +143,7 @@ bool Piece::moveDown(Board &board)
     return false;
 }
 
-void Piece::moveLeft(Board &board)
+bool Piece::moveLeft(Board &board)
 {
     // First substract the coordinates
     std::for_each(coords.begin(), coords.end(), [](Coord &c)
@@ -156,14 +156,15 @@ void Piece::moveLeft(Board &board)
         {
             block.move(-this->block_size, 0);
         }
-        return;
+        return true;
     }
     // Not a valid piece, so return the y-coordinates
     std::for_each(coords.begin(), coords.end(), [](Coord &c)
                   { c.x++; });
+    return false;
 }
 
-void Piece::moveRight(Board &board)
+bool Piece::moveRight(Board &board)
 {
     // First substract the coordinates
     std::for_each(coords.begin(), coords.end(), [](Coord &c)
@@ -176,14 +177,15 @@ void Piece::moveRight(Board &board)
         {
             block.move(this->block_size, 0);
         }
-        return;
+        return true;
     }
     // Not a valid piece, so return the y-coordinates
     std::for_each(coords.begin(), coords.end(), [](Coord &c)
                   { c.x--; });
+    return false;
 }
 
-void Piece::rotate(Board &board)
+bool Piece::rotate(Board &board)
 {
     // First transform the positions
     auto trans = this->transformations[this->transformation_index];
@@ -203,7 +205,7 @@ void Piece::rotate(Board &board)
             blocks[i].move(trans[i].x * this->block_size, trans[i].y * this->block_size);
         }
         this->transformation_index = (this->transformation_index + 1) % this->transformations.size();
-        return;
+        return true;
     }
 
     // Return the positions to normal
@@ -212,6 +214,7 @@ void Piece::rotate(Board &board)
         this->coords[i].x -= trans[i].x;
         this->coords[i].y -= trans[i].y;
     }
+    return false;
 }
 
 bool Piece::hasBeenMoved()
