@@ -157,7 +157,7 @@ std::vector<Coord> Board::getCoords() {
     std::vector<Coord> coords;
     for (auto row : this->blocks) {
         for (auto col : row.second) {
-            coords.push_back(Coord{row.first, col.first});
+            coords.push_back(Coord{col.first, row.first});
         }
     }
     return coords;

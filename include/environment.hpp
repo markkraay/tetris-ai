@@ -41,7 +41,7 @@ class Environment {
 		bool moveDown();
 
 		Img getObservationSpace();
-		std::vector<Img> getPieceConfigurations();
+		std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> getPieceConfigurations();
 		void executeAction(ActionSpace::Action action);
 		bool isActive();
 };

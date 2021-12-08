@@ -1,3 +1,4 @@
+#include <iostream>
 #include <tuple>
 #include "environment.hpp"
 #include "board.hpp"
@@ -90,7 +91,6 @@ bool Environment::moveDown()
             rows_removed.setString("Rows Cleared: " + std::to_string(board.getRowsCleared()));
 
             piece = Piece(PieceTypes::random(), piece.getBlockSize());
-            this->getPieceConfigurations();
         }
     }
     // The game can continue
@@ -152,14 +152,14 @@ Img Environment::getObservationSpace()
     auto dims = this->board.getDims();
     Img binary_board(dims.row, std::vector<int>(dims.col, 0));
     for (const auto &coord : this->board.getCoords()) {
-        binary_board[coord.x][coord.y] = 1;
+        binary_board[coord.y][coord.x] = 1;
     }
     return binary_board;
 }
 
-std::vector<Img> Environment::getPieceConfigurations() 
+std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> Environment::getPieceConfigurations() 
 {
-    std::vector<Img> configurations;
+    std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> configurations;
     auto dims = this->board.getDims();
     Piece original_piece = this->piece;
 
@@ -172,25 +172,28 @@ std::vector<Img> Environment::getPieceConfigurations()
     }
 
     // Have to test each rotation and each row
-    for (int i = 0; i < 4; i++) { // Assuming 4 rotations for each block (not the case for the square block)
+    for (int rotations = 0; rotations < 4; rotations++) { // Assuming 4 rotations for each block (not the case for the square block)
         original_piece.rotate(this->board);
         Piece rotation_piece = original_piece;
-        for (int j = max - min; j < dims.col; j++) {
+        for (int m_right = max - min; m_right < dims.col; m_right++) {
             rotation_piece.moveRight(this->board);
             Piece drop_piece = rotation_piece;
-            int moves_down = 0;
+            int m_down = 1;
             while (drop_piece.moveDown(this->board)) {
-                moves_down++;
+                m_down++;
             }
-            // Add the board configuration to the total configurations
+            // // Add the board configuration to the total configurations
             Img img(dims.row, std::vector<int>(dims.col, 0));
             for (const auto &coord : this->board.getCoords()) {
-                img[coord.x][coord.y] = 1;
+                img[coord.y][coord.x] = 1;
             }
             for (const auto &coord : drop_piece.getCoords()) {
-                img[coord.x][coord.y] = 1;
-            }
-            configurations.push_back(img);
+                img[coord.y][coord.x] = 1;
+             }
+             std::vector<ActionSpace::Action> actions(rotations, ActionSpace::Action::Rotate);
+             for (int i = 0; i < m_right; i++) actions.push_back(ActionSpace::Action::Right);
+             for (int i = 0; i < m_down; i++) actions.push_back(ActionSpace::Action::None);
+            configurations.push_back(std::make_tuple(img, actions));
         }
     }
     return configurations;
