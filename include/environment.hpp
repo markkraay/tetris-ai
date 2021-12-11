@@ -34,7 +34,6 @@ class Environment {
 		Piece piece; 
 
 		void move_down_helper(std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> &configs, Piece piece, int moves, ActionSpace::Action action, int rotations);
-
 	public:
 		Environment(int r=20, int c=10, int bs=30); // Rows, columns, block size
 
@@ -45,6 +44,7 @@ class Environment {
 
 		Img getObservationSpace();
 		std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> getPieceConfigurations();
+		int getScore();
 		void executeAction(ActionSpace::Action action);
 		bool isActive();
 };

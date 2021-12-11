@@ -160,20 +160,24 @@ Img Environment::getObservationSpace()
     return binary_board;
 }
 
-void Environment::move_down_helper(std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> &configs, Piece piece, int moves, ActionSpace::Action action, int rotations) 
+void Environment::move_down_helper(std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> &configs, Piece piece, int moves, ActionSpace::Action action, int rotations)
 {
     int m_down = 0;
     Piece down_piece = piece;
-    while(down_piece.moveDown(this->board)) {
+    while (down_piece.moveDown(this->board))
+    {
         m_down++;
     }
     Img img = this->getObservationSpace();
-    for (const Coord &c : down_piece.getCoords()) {
+    for (const Coord &c : down_piece.getCoords())
+    {
         img[c.y][c.x] = 1;
     }
     std::vector<ActionSpace::Action> actions(rotations, ActionSpace::Action::Rotate);
-    for (int i = 0; i < moves; i++) actions.push_back(action);
-    for (int i = 0; i <= m_down; i++) actions.push_back(ActionSpace::Action::None);
+    for (int i = 0; i < moves; i++)
+        actions.push_back(action);
+    for (int i = 0; i <= m_down; i++)
+        actions.push_back(ActionSpace::Action::None);
     configs.push_back(std::make_tuple(img, actions));
 }
 
@@ -185,21 +189,24 @@ std::vector<std::tuple<Img, std::vector<ActionSpace::Action>>> Environment::getP
 
     // Find the width of the current piece for the number of right movements
     int rotations = 0;
-    while(original_piece.rotate(this->board) && rotations < 4) {
+    while (original_piece.rotate(this->board) && rotations < 4)
+    {
         rotations++;
         // Straight down
         move_down_helper(configurations, original_piece, 0, ActionSpace::Action::None, rotations);
         // Left
         int m_left = 0;
         Piece left_piece = original_piece;
-        while(left_piece.moveLeft(this->board)) {
+        while (left_piece.moveLeft(this->board))
+        {
             m_left++;
             move_down_helper(configurations, left_piece, m_left, ActionSpace::Action::Left, rotations);
         }
         // Right
         int m_right = 0;
         Piece right_piece = original_piece;
-        while(right_piece.moveRight(this->board)) {
+        while (right_piece.moveRight(this->board))
+        {
             m_right++;
             move_down_helper(configurations, right_piece, m_right, ActionSpace::Action::Right, rotations);
         }
@@ -227,6 +234,11 @@ void Environment::executeAction(ActionSpace::Action action)
         moveDown();
         return;
     }
+}
+
+int Environment::getScore()
+{
+    return this->board.getScore();
 }
 
 bool Environment::isActive()

@@ -20,9 +20,17 @@ PYBIND11_MODULE(tetris_environment, handle)
           return out;
         })
         .def("getPieceConfigurations", [](Environment &self) {
-          py::array out = py::cast(self.getPieceConfigurations());
+          py::list out;
+          for (auto const &config : self.getPieceConfigurations()) 
+          {
+            py::array img = py::cast(std::get<0>(config));
+            py::list actions = py::cast(std::get<1>(config));
+            py::tuple in = py::make_tuple(img, actions);
+            out.append(in);
+          }
           return out;
         })
+        .def("getScore", &Environment::getScore)
         .def("isActive", &Environment::isActive)
 		    .def("render", &Environment::render)
         .def("reset", &Environment::reset);
