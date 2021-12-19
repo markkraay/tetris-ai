@@ -54,15 +54,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-
-	# while environment.isActive():
-	# 	configs = environment.getPieceConfigurations()
-	# 	if len(configs) == 0:
-	# 		environment.executeAction(ActionSpace.none)
-	# 		environment.render()
-	# 	else:
-	# 		actions = fitness_func.find_best_path(configs)
-	# 		for action in actions:
-	# 			environment.executeAction(action)
-	# 			environment.render()
